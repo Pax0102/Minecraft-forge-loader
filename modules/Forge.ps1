@@ -15,7 +15,6 @@ function Get-ForgeInfo {
         return $Result
     }
 
-    # Forge moderno (1.17+): instalado via run.bat/run.sh + arquivo de argumentos (@win_args.txt)
     $ForgeLibDir = Join-Path $Server "libraries\net\minecraftforge\forge"
 
     if(Test-Path $ForgeLibDir){
@@ -35,7 +34,6 @@ function Get-ForgeInfo {
                 $Result.LaunchMode = "modern"
                 $Result.ArgsFile = $ArgsFile.FullName
 
-                # Nome da pasta = "<minecraft>-<forge>"
                 if($VersionFolder.Name -match "^(.+)-([^-]+)$"){
                     $Result.MinecraftVersion = $Matches[1]
                     $Result.Version = $Matches[2]
@@ -50,7 +48,6 @@ function Get-ForgeInfo {
 
     }
 
-    # Forge legado (<= 1.16.5): jar executavel direto na pasta do servidor
     if(!$Result.Installed){
 
         $Jar = Get-ChildItem $Server -Filter "forge-*.jar" -ErrorAction SilentlyContinue |
@@ -63,13 +60,6 @@ function Get-ForgeInfo {
             $Result.LaunchMode = "legacy"
             $Result.ServerJar = $Jar.FullName
 
-            # Padrao classico usado por builds Forge <= 1.16.5:
-            # forge-<mc>-<forge>[-universal].jar. Versoes "modernas" (1.17+)
-            # nao chegam aqui (sao pegas pelo bloco run.bat/win_args.txt
-            # acima). Se algum jar tiver nome fora desse padrao, o regex
-            # simplesmente nao casa e Version/MinecraftVersion ficam vazios
-            # aqui - sem problema, ha fallback logo abaixo para os valores
-            # gravados em version.json.
             if($Jar.Name -match "^forge-([0-9][0-9a-zA-Z\.]*)-([0-9][0-9a-zA-Z\.]*?)(-universal)?\.jar$"){
                 $Result.MinecraftVersion = $Matches[1]
                 $Result.Version = $Matches[2]
@@ -79,7 +69,6 @@ function Get-ForgeInfo {
 
     }
 
-    # A versao instalada tambem fica registrada em version.json como fonte de verdade / fallback.
     $State = Get-VersionState
 
     if([string]::IsNullOrWhiteSpace($Result.Version) -and $State.forgeVersion){
