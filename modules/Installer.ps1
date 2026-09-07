@@ -24,7 +24,6 @@ function Install-Forge {
 
     $FullVersion = "$MinecraftVersion-$ForgeVersion"
 
-    # Verifica se o Forge ja esta instalado nessa versao exata antes de baixar
     $ForgeAtual = Get-ForgeInfo
     if($ForgeAtual.Installed -and $ForgeAtual.Version -eq $ForgeVersion -and $ForgeAtual.MinecraftVersion -eq $MinecraftVersion){
         Write-Info "Forge $FullVersion ja esta instalado. Pulando download."
@@ -32,7 +31,6 @@ function Install-Forge {
         return $true
     }
 
-    # Remove installer anterior se existir (evita usar jar corrompido de execucao anterior)
     if(Test-Path $Installer){
         Remove-Item $Installer -Force -ErrorAction SilentlyContinue
     }
@@ -44,11 +42,6 @@ function Install-Forge {
         return $false
     }
 
-    # Reutiliza o Java ja resolvido pelo caller (evita segundo download/busca)
-    # SE ele ainda for compativel com a versao alvo desta instalacao/update.
-    # Sem essa checagem, uma atualizacao que pula de major (ex.: 1.20.x com
-    # Java 17 -> 26.x com Java 25) reaproveitaria o Java antigo e o Forge
-    # Installer rodaria com um runtime incompativel.
     $RequiredMajor = Get-RequiredJavaMajor $MinecraftVersion
 
     $Java = if($JavaOverride -and $JavaOverride.Installed -and $JavaOverride.Major -ge $RequiredMajor){
@@ -94,7 +87,6 @@ function Install-Forge {
         return $false
     }
 
-    # Remove o installer apos uso bem-sucedido
     Remove-Item $Installer -Force -ErrorAction SilentlyContinue
 
     Set-VersionState `
