@@ -15,8 +15,6 @@ function Set-ConfigValue {
     $Config | Add-Member -MemberType NoteProperty -Name $Key -Value $Value -Force
 
     try{
-        # UTF8 sem BOM (ver Set-Utf8NoBom em Utils.ps1) - evita corromper a
-        # leitura do config.json em execucoes futuras.
         ($Config | ConvertTo-Json -Depth 5) | Set-Utf8NoBom -Path $Path
         return $true
     }
