@@ -1,7 +1,5 @@
 function Write-ColorLine {
 
-    # config.json "coloredConsole": false imprime sem -ForegroundColor.
-    # Antes essa chave existia no config.json mas nada no codigo lia ela.
     param(
         [string]$Text,
         [System.ConsoleColor]$Color
